@@ -1,0 +1,104 @@
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <string.h> 
+#define MAX 100 
+
+struct aluno {     
+    int matricula;     
+    char nome[30];     
+    float n1, n2, n3; 
+};  
+
+typedef struct fila Fila; 
+ struct fila {     
+    int inicio, final, qtd;     
+    struct aluno dados[MAX]; 
+}; 
+ 
+Fila* cria_Fila() { 
+    Fila *fi = (Fila*)malloc(sizeof(Fila));     
+    if (fi != NULL) { 
+        fi->inicio = 0;         
+        fi->final = 0;         
+        fi->qtd = 0; 
+    }     
+    return fi; 
+}  
+
+void libera_Fila(Fila *fi) {     
+    free(fi); 
+}  
+
+int fila_cheia(Fila *fi) { 
+    return (fi == NULL) ? -1 : (fi->qtd == MAX); 
+} 
+
+int fila_vazia(Fila *fi) { 
+    return (fi == NULL) ? -1 : (fi->qtd == 0); 
+} 
+
+int insere_Fila(Fila *fi, struct aluno al) {     
+    if (fi == NULL || fila_cheia(fi)) return 0;     
+    fi->dados[fi->final] = al;    
+    fi->final = (fi->final + 1) % MAX;     
+    fi->qtd++;     
+    return 1; 
+}  
+
+int remove_Fila(Fila *fi) { 
+    if (fi == NULL || fila_vazia(fi)) return 0;     
+    fi->inicio = (fi->inicio + 1) % MAX;     
+    fi->qtd--; 
+    return 1; 
+}  
+
+void mostra_Fila(Fila *fi) {     
+    if (fi == NULL) return;     
+        printf("FILA ");     
+    if (fi->qtd > 0) { 
+        printf("ATUAL\n");         
+    int cont = fi->inicio;         
+    for (int i = 0; i < fi->qtd; i++) { 
+        int idx = (cont + i) % MAX; 
+            printf("%d\t%s\t%.2f\t%.2f\t%.2f\n", fi->dados[idx].matricula, fi->dados[idx].nome, fi->dados[idx].n1, fi->dados[idx].n2, fi->dados[idx].n3); 
+        }    
+    } else { 
+        printf("VAZIA!!\n"); 
+    } 
+    printf("\n"); 
+}  
+int main(int argc, char** argv) { 
+    Fila *fi = cria_Fila();     if (fi == NULL) { 
+        fprintf(stderr, "Erro ao criar fila.\n");         
+        return EXIT_FAILURE; 
+    }  
+    
+    struct aluno al; 
+     
+    // Insere o primeiro aluno     al.matricula = 100; 
+    strncpy(al.nome, "arthur", sizeof(al.nome) - 1); 
+    al.nome[sizeof(al.nome) - 1] = '\0';  // Garante a terminação da string 
+    al.n1 = 10; al.n2 = 10; al.n3 = 10;  
+
+    insere_Fila(fi, al); 
+     
+    // Insere o segundo aluno     al.matricula = 101; 
+    strncpy(al.nome, "carol", sizeof(al.nome) - 1); 
+    al.nome[sizeof(al.nome) - 1] = '\0';  // Garante a terminação da string 
+    al.n1 = 11; al.n2 = 11; al.n3 = 11;    
+
+    insere_Fila(fi, al); 
+
+     mostra_Fila(fi); 
+     
+    remove_Fila(fi);     
+    
+    mostra_Fila(fi); 
+     
+    remove_Fila(fi);     
+    
+    mostra_Fila(fi); 
+     
+    libera_Fila(fi);     
+    
+    return EXIT_SUCCESS; 
